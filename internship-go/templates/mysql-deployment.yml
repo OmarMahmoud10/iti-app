@@ -1,0 +1,35 @@
+# we will not use deployment for mysql, we will use StatefulSet, this is for testing purposes
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      volumes:
+      - name: mysql-volume 
+        persistentVolumeClaim: 
+          claimName: mysql-pvc
+      containers:
+      - name: mysql
+        volumeMounts:
+        - name: mysql-volume
+          mountPath: /var/lib/mysql
+        image: mysql
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+
